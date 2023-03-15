@@ -14,21 +14,23 @@ def SIFT_Match(img1,img2):
     img3 = cv2.drawKeypoints(img1,kp1,img1,color=(255,0,255))
     img4 = cv2.drawKeypoints(img2,kp2,img2,color=(255,0,255))
     vis1 = np.hstack([img3,img4])
-    cv2.imshow("points",vis1)
-
+    # cv2.imshow("points",vis1)
+    cv2.namedWindow("t",0)  #//创建窗口
     good = []
     for m,n in matches:
         if m.distance < 0.75*n.distance:
             good.append([m])
     img5 = cv2.drawMatchesKnn(img1,kp1,img2,kp2,good,None,flags=2)
-    cv2.imshow("BFmatch", img5)
+    cv2.imshow("t", img5)
     cv2.waitKey(0)
     cv2.destroyAllWindows()
 
 if __name__=="__main__":
-    imgL =  cv2.imread("data/Flowerpots/view0.png",-1)
-    imgR1 = cv2.imread("data/Flowerpots/view1.png", -1)
-    imgR2 = cv2.imread("data/Flowerpots/view2.png", -1)
-    img1,vis1 = compute_disparity(imgL,imgR1)
-    img2,vis2 = compute_disparity(imgL,imgR2)
+    # imgL =  cv2.imread("data/Flowerpots/view0.png",-1)
+    # imgR1 = cv2.imread("data/Flowerpots/view1.png", -1)
+    # imgR2 = cv2.imread("data/Flowerpots/view2.png", -1)
+    # img1,vis1 = compute_disparity(imgL,imgR1)
+    # img2,vis2 = compute_disparity(imgL,imgR2)
+    img1 =  cv2.imread("data/20230315-133959.jpg",-1)
+    img2 = cv2.imread("data/20230315-134015.jpg", -1)
     SIFT_Match(img1,img2)
