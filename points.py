@@ -9,6 +9,26 @@ def visDisp(disp):
     filteredImg = np.uint8(filteredImg)
     return filteredImg
 
+def drawPoints(imgO,pts):
+    img = copy.deepcopy(imgO)
+    for pt in pts:
+        point_size = 1
+        point_color = (255, 0, 255) # BGR
+        thickness = 4 # 可以为 0 、4、8
+        img = cv2.circle(img, pt, point_size, point_color, thickness)
+    return img
+
+def drawLines(img1,img2,pts1,pts2):
+    img = np.hstack([img1,img2])
+    point_color = (0, 0, 255) # BGR
+    thickness = 1
+    lineType = 4
+    for i,pt1 in enumerate(pts1):
+        pt2 = pts2[i]
+        pt2[0]+=img1.shape[1]
+        print(pt1,pt2)
+        img = cv2.line(img,pt1,pt2,point_color,thickness,lineType)
+    return img
 def on_mouse_moving(event, x, y, flags, param):
     depth_map, showing_img ,windowsName= param
     if event == cv2.EVENT_MOUSEMOVE:
@@ -29,36 +49,36 @@ def on_mouse_moving(event, x, y, flags, param):
         showing_img = cv2.circle(showing_img, (x,y), point_size, point_color, thickness)
 
 
-tof_raw_depth = cv2.imread("data/re_tof_4/raw_tof_depth.png",cv2.IMREAD_ANYDEPTH)
+tof_raw_depth = cv2.imread("data/test1/1array_raw_tof_depth.png",cv2.IMREAD_ANYDEPTH)
 tof_raw_depth = np.rot90(tof_raw_depth,1)
-realsense_raw_depth = cv2.imread("data/re_tof_4/2023_03_15_17_01_35_realsense_depth.png",cv2.IMREAD_ANYDEPTH)
+realsense_raw_depth = cv2.imread("data/test1/rs1_Depth.png",cv2.IMREAD_ANYDEPTH)
 realsense_raw_depth = cv2.resize(realsense_raw_depth,(tof_raw_depth.shape[1],tof_raw_depth.shape[0]),None)
 
 
 img_color_tof = cv2.applyColorMap(visDisp(tof_raw_depth),cv2.COLORMAP_PARULA) 
 img_color_real = cv2.applyColorMap(visDisp(realsense_raw_depth),cv2.COLORMAP_PARULA) 
 
+
 # 点标定
-# cv2.imshow("tof",img_color_tof)
-# cv2.setMouseCallback('tof', on_mouse_moving,[img_color_tof,img_color_tof,'tof2'])
-# cv2.imshow("real",img_color_real)
-# cv2.setMouseCallback('real', on_mouse_moving,[img_color_real,img_color_real,'real2'])
+cv2.imshow("tof",img_color_tof)
+cv2.setMouseCallback('tof', on_mouse_moving,[img_color_tof,img_color_tof,'tof2'])
+cv2.imshow("real",img_color_real)
+cv2.setMouseCallback('real', on_mouse_moving,[img_color_real,img_color_real,'real2'])
 
 
 # 单应性矩阵计算+透视变换
 # lines = open("data/re_tof_4/matched.txt").readlines()
 # lines = [line.replace("\n","") for line in lines]
-# tof_pts = [(int(line.split(' ')[0]),int(line.split(' ')[1])) for line in lines]
-# real_pts = [(int(line.split(' ')[2]),int(line.split(' ')[3])) for line in lines]
-# tof_pts = np.asarray(tof_pts)
-# real_pts = np.asarray(real_pts)
-# print(tof_pts)
-# print(real_pts)
+# tof_pts = [[int(line.split(' ')[0]),int(line.split(' ')[1])] for line in lines]
+# real_pts = [[int(line.split(' ')[2]),int(line.split(' ')[3])] for line in lines]
 
-# matrix, mask = cv2.findHomography(real_pts, tof_pts, 0)
+# tof_pts_np = np.asarray(tof_pts)
+# real_pts_np = np.asarray(real_pts)
+# matrix, mask = cv2.findHomography(real_pts_np, tof_pts_np, 0)
 # print(f'matrix: {matrix}')
-# perspective_img = cv2.warpPerspective(img_color_real, matrix, (img_color_tof.shape[1], img_color_tof.shape[0]))
-# cv2.imshow("t",np.hstack([img_color_tof,perspective_img]))
+# perspective_real = cv2.warpPerspective(img_color_real, matrix, (img_color_tof.shape[1], img_color_tof.shape[0]))
+# vis2 = drawLines(drawPoints(img_color_tof,tof_pts),drawPoints(perspective_real,tof_pts),tof_pts,copy.deepcopy(tof_pts))
+# cv2.imshow("after",vis2)
 # cv2.waitKey(0)
 
 
