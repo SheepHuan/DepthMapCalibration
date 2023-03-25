@@ -48,12 +48,12 @@ def on_mouse_moving(event, x, y, flags, param):
         showing_img = cv2.circle(showing_img, (x,y), point_size, point_color, thickness)
 
 
-img_tof = cv2.imread("img_tof.png",-1)
-img_rs = cv2.imread("img_rs.png",-1)
+img_tof = cv2.imread("data/6/imgL_0.png",0)
+img_rs = cv2.imread("data/6/imgR_0.png",0)
 vis1 = np.hstack([copy.deepcopy(img_tof),copy.deepcopy(img_rs)])
 # cv2.imshow("before",)
 # 单应性矩阵计算+透视变换
-lines = open("match.txt").readlines()
+lines = open("data/6/match.txt").readlines()
 lines = [line.replace("\n","") for line in lines]
 tof_pts = [[int(line.split(' ')[0]),int(line.split(' ')[1])] for line in lines]
 real_pts = [[int(line.split(' ')[2]),int(line.split(' ')[3])] for line in lines]

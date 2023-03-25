@@ -53,16 +53,17 @@ MIN_DEPTH = 0
 def getDepthFromTxt(filename,rows=180,cols=240,channles=1):
     depth = np.zeros((180,240),dtype = np.uint16)
     confidence = np.zeros((180,240))
-    with open(filename, 'rt') as f:
-        j = 0
-        for line in f:
-            l = line.split('\t')[:-1]
-            l = [int(i) for i in l]
-            data_line = l[:240]
-            conf_line = l[240:480]
-            depth[j,:] = data_line
-            confidence[j,:] = conf_line
-            j = j + 1
+    lines = open(filename, 'rt').read().split("\\n")
+    lines = [line for line in lines if line!=""]
+    j = 0
+    for line in lines:
+        l = line.split('\\t')[:-1]
+        l = [int(i) for i in l]
+        data_line = l[:240]
+        conf_line = l[240:480]
+        depth[j,:] = data_line
+        confidence[j,:] = conf_line
+        j = j + 1
     depth[depth == np.Inf] = MIN_DEPTH
     depth[depth > MAX_DEPTH] = MIN_DEPTH
     return depth, confidence
@@ -169,8 +170,8 @@ def det_five_pointed_star(img):
     return img,all_pts
 
 # cv2.namedWindow("out",cv2.WINDOW_NORMAL)
-cv2.namedWindow("out")
-tof_raw_depth,tof_raw_confidence = getDepthFromTxt("data/5/1679469012166_tof.txt")
+# cv2.namedWindow("out")
+tof_raw_depth,tof_raw_confidence = getDepthFromTxt(r"D:\code\MobileToFAndStereo\app\src\main\proto\1679666947511.txt")
 realsense_raw_depth = getDepthFromRaw("data/5/rs_Depth.raw")
 realsense_raw_depth = np.rot90(realsense_raw_depth,2)
 realsense_raw_depth = cv2.resize(realsense_raw_depth,(tof_raw_depth.shape[1],tof_raw_depth.shape[0]),None)
@@ -185,7 +186,7 @@ tof_raw_depth = filterDepth(tof_raw_depth,390,520,480)
 # realsense_raw_depth = filterDepth(realsense_raw_depth,400,550,480)
 
 img_color_tof = cv2.applyColorMap(visDisp(tof_raw_depth),cv2.COLORMAP_PARULA) 
-# img_color_real = cv2.applyColorMap(visDisp(realsense_raw_depth),cv2.COLORMAP_PARULA) 
+img_color_real = cv2.applyColorMap(visDisp(realsense_raw_depth),cv2.COLORMAP_PARULA) 
 
 tof_out = filterSmallAreas(copy.deepcopy(img_color_tof))
 real_out = filterSmallAreas(copy.deepcopy(realsense_raw_left),3,7)
@@ -197,8 +198,8 @@ for i in range(4):
         print(*pts_tof[i][j],*pts_rs[i][j])
 cv2.imshow("out",np.hstack([res_tof,res_rs]))
 
-cv2.imwrite("img_tof.png",tof_out)
-cv2.imwrite("img_rs.png",real_out)
+# cv2.imshow("img_tof",img_color_tof)
+# cv2.imwrite("img_rs",real_out)
 
 # cv2.imshow("l:tof, r:gt",np.hstack([img_color_tof,img_color_real]))
 cv2.waitKey(0)
